@@ -1,22 +1,25 @@
 import os
 import base64
 import requests
+import random
 from datetime import datetime
 
+from aws_lambda_powertools import Logger
+
+SERVICE_NAME = os.getenv("POWERTOOLS_SERVICE_NAME")
+LOG_LEVEL = os.getenv("LOG_LEVEL") or "INFO"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_USERNAME = os.getenv("GITHUB_USERNAME")
 GITHUB_REPO = os.getenv("GITHUB_REPO")
 FILE_PATH = "commit-log.txt"  # File being updated in the repo
 
+logger = Logger(service=SERVICE_NAME, level=LOG_LEVEL)
 
 def get_existing_content():
     """Fetches the current content and SHA of the file from GitHub."""
     url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{GITHUB_REPO}/contents/{FILE_PATH}"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json",
-    }
-
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -29,9 +32,14 @@ def get_existing_content():
     else:
         raise Exception(f"GitHub API error: {response.status_code} - {response.text}")
 
-
 def commit_to_github():
-    """Appends a new log entry to commit-log.txt in the GitHub repo."""
+    """Appends a new log entry to commit-log.txt in the GitHub repo with an 85% chance."""
+
+    # 85% Probability of Making a Commit
+    if random.random() < 0.85:
+        logger.info("Skipping commit today (random chance applied).")
+        return {"statusCode": 200, "body": "Skipped commit today."}
+    
     commit_message = f"Daily commit on {datetime.now().isoformat()}"
     new_entry = f"Commit at {datetime. now().isoformat()}"
 
@@ -44,10 +52,7 @@ def commit_to_github():
 
         # Prepare commit payload
         url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{GITHUB_REPO}/contents/{FILE_PATH}"
-        headers = {
-            "Authorization": f"token {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github.v3+json",
-        }
+        headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
         payload = {
             "message": commit_message,
             "content": encoded_content,
@@ -65,7 +70,6 @@ def commit_to_github():
 
     except Exception as e:
         print(f"⚠️ Error committing to GitHub: {str(e)}")
-
 
 def handler(event, context):
     commit_to_github()
