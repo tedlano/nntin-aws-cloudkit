@@ -56,3 +56,13 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+
+mkdir nntin-aws-cloudkit            # create project folder
+cd nntin-aws-cloudkit               # move into project folder
+cdk init app --language python      # init cdk
+
+code .  # open vscode               # open project in vscode
+pip install aws-cdk-lib constructs boto3
+pip freeze > requirements.txt
+
