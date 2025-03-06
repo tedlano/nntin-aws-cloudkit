@@ -2,19 +2,21 @@ import os
 import base64
 import requests
 from datetime import datetime
-from dotenv import load_dotenv
-load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_USERNAME = os.getenv("GITHUB_USERNAME")
 GITHUB_REPO = os.getenv("GITHUB_REPO")
 FILE_PATH = "commit-log.txt"  # File being updated in the repo
 
+
 def get_existing_content():
     """Fetches the current content and SHA of the file from GitHub."""
     url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{GITHUB_REPO}/contents/{FILE_PATH}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
-    
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -26,6 +28,7 @@ def get_existing_content():
         return "", None  # File doesn't exist yet
     else:
         raise Exception(f"GitHub API error: {response.status_code} - {response.text}")
+
 
 def commit_to_github():
     """Appends a new log entry to commit-log.txt in the GitHub repo."""
@@ -41,7 +44,10 @@ def commit_to_github():
 
         # Prepare commit payload
         url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{GITHUB_REPO}/contents/{FILE_PATH}"
-        headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+        headers = {
+            "Authorization": f"token {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github.v3+json",
+        }
         payload = {
             "message": commit_message,
             "content": encoded_content,
@@ -59,6 +65,7 @@ def commit_to_github():
 
     except Exception as e:
         print(f"⚠️ Error committing to GitHub: {str(e)}")
+
 
 def handler(event, context):
     commit_to_github()

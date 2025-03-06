@@ -8,6 +8,7 @@ import aws_cdk as cdk
 from nntin_aws_cloudkit.nntin_aws_cloudkit_stack import NntinAwsCloudkitStack
 from cdk.stacks.autoscheduler_stack import AutoSchedulerStack
 
+
 def resolve_environment():
     """Resolve AWS account and region dynamically."""
     # Attempt to fetch the account ID and region from environment variables
@@ -24,6 +25,7 @@ def resolve_environment():
         raise EnvironmentError("Unable to resolve AWS account and region.")
 
     return cdk.Environment(account=account, region=region)
+
 
 # Parse command-line arguments for environment selection
 parser = argparse.ArgumentParser(
