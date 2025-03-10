@@ -36,8 +36,9 @@ def commit_to_github():
     """Appends a new log entry to commit-log.txt in the GitHub repo with an 85% chance."""
 
     # 85% Probability of Making a Commit
-    if random.random() < 0.85:
-        logger.info("Skipping commit today (random chance applied).")
+    rand_num = random.random()
+    if rand_num < 0.85:
+        logger.info(f"Skipping commit today (random chance applied {rand_num}).")
         return {"statusCode": 200, "body": "Skipped commit today."}
     
     commit_message = f"Daily commit on {datetime.now().isoformat()}"
