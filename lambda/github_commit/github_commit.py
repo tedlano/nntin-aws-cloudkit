@@ -37,7 +37,7 @@ def commit_to_github():
 
     # 85% Probability of Making a Commit
     rand_num = random.random()
-    if rand_num < 0.85:
+    if rand_num > 0.85:
         logger.info(f"Skipping commit today (random chance applied {rand_num}).")
         return {"statusCode": 200, "body": "Skipped commit today."}
     
